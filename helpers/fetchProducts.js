@@ -1,4 +1,4 @@
-const item = require('../mocks/item');
+// const item = require('../mocks/item');
 
 const fetchProducts = async (searchItem) => {
   try {
