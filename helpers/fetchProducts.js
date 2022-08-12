@@ -1,5 +1,3 @@
-// const item = require('../mocks/item');
-
 const fetchProducts = async (searchItem) => {
   try {
     if (searchItem === undefined) {
@@ -12,10 +10,6 @@ const fetchProducts = async (searchItem) => {
     return err.message;
   }
 };
-// const final = async () => {
-//   console.log(await fetchProducts('computador'));
-// };
-// final();
 
 if (typeof module !== 'undefined') {
   module.exports = {

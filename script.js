@@ -1,3 +1,5 @@
+const bigSection = document.querySelector('.items');
+
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -12,6 +14,13 @@ const createCustomElement = (element, className, innerText) => {
   return e;
 };
 
+const refactor = async () => {
+  const { results } = await fetchProducts('computador');
+  const dadosRefa = results.map(({ id, title, thumbnail }) =>
+    ({ sku: id, name: title, image: thumbnail }));
+  return dadosRefa;
+};
+
 const createProductItemElement = ({ sku, name, image }) => {
   const section = document.createElement('section');
   section.className = 'item';
@@ -20,9 +29,18 @@ const createProductItemElement = ({ sku, name, image }) => {
   section.appendChild(createCustomElement('span', 'item__title', name));
   section.appendChild(createProductImageElement(image));
   section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
-
+  console.log(section);
   return section;
 };
+
+const teklet = async () => {
+  const items = await refactor();
+  for (let i = 0; i < 50; i += 1) {
+    bigSection.appendChild(createProductItemElement(items[i]));
+    console.log(items[i]);
+  }
+};
+teklet();
 
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
@@ -39,6 +57,3 @@ const createCartItemElement = ({ sku, name, salePrice }) => {
 };
 
 window.onload = () => { };
-createCartItemElement();
-getSkuFromProductItem();
-createProductItemElement();
