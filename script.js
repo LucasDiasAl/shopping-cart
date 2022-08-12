@@ -47,21 +47,19 @@ const itemsList = async () => {
 
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
-// const cartItemClickListener = (event) => {
-//   // coloque seu código aqui
-// };
+const cartItemClickListener = ({ target }) => {
+  cartSection.removeChild(target);
+};
 
 const createCartItemElement = ({ sku, name, salePrice }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-  li.addEventListener('click', () => console.log('oi'));
+  li.addEventListener('click', cartItemClickListener);
   return li;
 };
-const itemShop = async (Event) => {
-  console.log((Event.target).parentNode);
-  const pai = (Event.target).parentNode;
-  const itemId = getSkuFromProductItem(pai);
+const itemShop = async ({ target: { parentNode } }) => {
+  const itemId = getSkuFromProductItem(parentNode);
   const item = await refactor(fetchItem(itemId));
   const createdLi = createCartItemElement(item);
   cartSection.appendChild(createdLi);
