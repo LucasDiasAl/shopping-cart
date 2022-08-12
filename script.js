@@ -1,4 +1,7 @@
+// const { price } = require("./mocks/item");
+
 const bigSection = document.querySelector('.items');
+const cartSection = document.querySelector('.cart__items');
 
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
@@ -14,10 +17,12 @@ const createCustomElement = (element, className, innerText) => {
   return e;
 };
 
-const refactor = async () => {
-  const { results } = await fetchProducts('computador');
-  const dadosRefa = results.map(({ id, title, thumbnail }) =>
-    ({ sku: id, name: title, image: thumbnail }));
+const refactor = async (callback) => {
+  const results = await callback;
+  const dadosRefa = results.length > 1
+    ? results.map(({ id, title, thumbnail, price }) =>
+      ({ sku: id, name: title, image: thumbnail, salePrice: price }))
+    : { sku: results.id, name: results.title, salePrice: results.price };
   return dadosRefa;
 };
 
@@ -29,18 +34,16 @@ const createProductItemElement = ({ sku, name, image }) => {
   section.appendChild(createCustomElement('span', 'item__title', name));
   section.appendChild(createProductImageElement(image));
   section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
-  console.log(section);
   return section;
 };
+refactor(fetchItem('MLB1341706310'));
 
-const teklet = async () => {
-  const items = await refactor();
-  for (let i = 0; i < 50; i += 1) {
+const itemsList = async () => {
+  const items = await refactor(fetchProducts('computador'));
+  for (let i = 0; i < items.length; i += 1) {
     bigSection.appendChild(createProductItemElement(items[i]));
-    console.log(items[i]);
   }
 };
-teklet();
 
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
@@ -52,8 +55,23 @@ const createCartItemElement = ({ sku, name, salePrice }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-  li.addEventListener('click', cartItemClickListener);
+  li.addEventListener('click', () => console.log('oi'));
   return li;
 };
+const itemShop = async (Event) => {
+  console.log((Event.target).parentNode);
+  const pai = (Event.target).parentNode;
+  const itemId = getSkuFromProductItem(pai);
+  const item = await refactor(fetchItem(itemId));
+  const createdLi = createCartItemElement(item);
+  cartSection.appendChild(createdLi);
+};
+itemsList().then(() => {
+  const addButton = document.getElementsByClassName('item__add');
+  for (let i = 0; i < addButton.length; i += 1) {
+  addButton[i].addEventListener('click', itemShop);
+  }
+});
 
-window.onload = () => { };
+window.onload = () => {
+};
