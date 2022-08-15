@@ -36,7 +36,6 @@ const createProductItemElement = ({ sku, name, image }) => {
   section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
   return section;
 };
-refactor(fetchItem('MLB1341706310'));
 
 const itemsList = async () => {
   const items = await refactor(fetchProducts('computador'));
@@ -49,6 +48,7 @@ const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').inn
 
 const cartItemClickListener = ({ target }) => {
   cartSection.removeChild(target);
+  saveCartItems(document.querySelectorAll('li'));
 };
 
 const createCartItemElement = ({ sku, name, salePrice }) => {
@@ -63,13 +63,24 @@ const itemShop = async ({ target: { parentNode } }) => {
   const item = await refactor(fetchItem(itemId));
   const createdLi = createCartItemElement(item);
   cartSection.appendChild(createdLi);
+  saveCartItems(document.querySelectorAll('li'));
 };
 itemsList().then(() => {
   const addButton = document.getElementsByClassName('item__add');
   for (let i = 0; i < addButton.length; i += 1) {
-  addButton[i].addEventListener('click', itemShop);
+    addButton[i].addEventListener('click', itemShop);
   }
 });
 
 window.onload = () => {
+  if (localStorage.cartItems) {
+    const itemsSalvos = JSON.parse(getSavedCartItems('cartItems'));
+    itemsSalvos.forEach(([texto]) => {
+      const li = document.createElement('li');
+      li.className = 'cart__item';
+      li.innerText = texto;
+      li.addEventListener('click', cartItemClickListener);
+      cartSection.appendChild(li);
+    });
+  }
 };
