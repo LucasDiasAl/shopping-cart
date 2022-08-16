@@ -1,7 +1,30 @@
-// const { price } = require("./mocks/item");
-
 const bigSection = document.querySelector('.items');
 const cartSection = document.querySelector('.cart__items');
+const bigCartSeciton = document.querySelector('.cart');
+
+const valor = document.createElement('p');
+valor.className = 'total-price';
+valor.innerText = '0';
+bigCartSeciton.appendChild(valor);
+
+const somaTotal = (salePrice, sinal) => {
+  let atual = parseFloat(valor.innerText);
+  console.log(atual, 1);
+  if (sinal === '+') {
+    atual += salePrice;
+    console.log(atual, 2);
+    atual = Math.round(atual * 100) / 100;
+    console.log(atual, 3);
+    valor.innerText = atual;
+    localStorage.setItem('totalPrice', valor.innerText);
+  } else {
+    atual -= salePrice;
+    atual = atual.isNaN || atual < 0 ? 0 : atual;
+    atual = Math.round(atual * 100) / 100;
+    valor.innerText = atual;
+    localStorage.setItem('totalPrice', valor.innerText);
+  }
+};
 
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
@@ -46,7 +69,8 @@ const itemsList = async () => {
 
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
-const cartItemClickListener = ({ target }) => {
+const cartItemClickListener = ({ target }, salePrice) => {
+  somaTotal(salePrice, '-');
   cartSection.removeChild(target);
   saveCartItems(document.querySelectorAll('li'));
 };
@@ -55,12 +79,14 @@ const createCartItemElement = ({ sku, name, salePrice }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-  li.addEventListener('click', cartItemClickListener);
+  li.addEventListener('click', (event) => cartItemClickListener(event, salePrice));
   return li;
 };
 const itemShop = async ({ target: { parentNode } }) => {
   const itemId = getSkuFromProductItem(parentNode);
   const item = await refactor(fetchItem(itemId));
+  const { salePrice } = item;
+  somaTotal(salePrice, '+');
   const createdLi = createCartItemElement(item);
   cartSection.appendChild(createdLi);
   saveCartItems(document.querySelectorAll('li'));
@@ -82,5 +108,8 @@ window.onload = () => {
       li.addEventListener('click', cartItemClickListener);
       cartSection.appendChild(li);
     });
+    valor.innerText = localStorage.getItem('totalPrice').includes('NaN')
+      ? '0'
+      : localStorage.getItem('totalPrice');
   }
 };
