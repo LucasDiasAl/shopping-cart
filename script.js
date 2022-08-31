@@ -1,6 +1,7 @@
 const bigSection = document.querySelector('.items');
 const cartSection = document.querySelector('.cart__items');
 const bigCartSeciton = document.querySelector('.cart');
+const emptyButton = document.querySelector('.empty-cart');
 
 const valor = document.createElement('p');
 valor.className = 'total-price';
@@ -9,23 +10,28 @@ bigCartSeciton.appendChild(valor);
 
 const somaTotal = (salePrice, sinal) => {
   let atual = parseFloat(valor.innerText);
-  console.log(atual, 1);
   if (sinal === '+') {
     atual += salePrice;
-    console.log(atual, 2);
     atual = Math.round(atual * 100) / 100;
-    console.log(atual, 3);
     valor.innerText = atual;
     localStorage.setItem('totalPrice', valor.innerText);
   } else {
     atual -= salePrice;
-    atual = atual.isNaN || atual < 0 ? 0 : atual;
     atual = Math.round(atual * 100) / 100;
+    atual = atual >= 0 ? atual : 0;
     valor.innerText = atual;
     localStorage.setItem('totalPrice', valor.innerText);
   }
 };
 
+const emptyCart = () => {
+  cartSection.innerHTML = '';
+  localStorage.setItem('totalPrice', 0);
+  localStorage.setItem('cartItems', []);
+  valor.innerText = 0;
+};
+
+emptyButton.addEventListener('click', emptyCart);
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -108,8 +114,9 @@ window.onload = () => {
       li.addEventListener('click', cartItemClickListener);
       cartSection.appendChild(li);
     });
-    valor.innerText = localStorage.getItem('totalPrice').includes('NaN')
+    valor.innerText = localStorage.getItem('totalPrice') === 'NaN'
       ? '0'
       : localStorage.getItem('totalPrice');
+    localStorage.setItem('totalPrice', valor.innerText);
   }
 };
