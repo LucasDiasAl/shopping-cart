@@ -20,7 +20,7 @@ describe('1 - Teste a função fetchProducts', () => {
 
   it('testa se a estrutura de dados retornada pela funçao fetchProducts esta correta',async () => {
     const esperado =await fetchProducts('computador')
-    expect(esperado).toEqual(computadorSearch);
+    expect(esperado).toBe(computadorSearch.results);
   });
 
   it('espera que um erro seja lançado ao chamar a funçao sem parametros',async () => {
