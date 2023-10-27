@@ -77,15 +77,19 @@ const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').inn
 
 const cartItemClickListener = ({ target }, salePrice) => {
   somaTotal(salePrice, '-');
-  cartSection.removeChild(target);
+  cartSection.removeChild(target.parentNode);
   saveCartItems(document.querySelectorAll('li'));
 };
 
 const createCartItemElement = ({ sku, name, salePrice }) => {
+  const button = document.createElement('button');
+  button.innerHTML = 'Remover';
+  button.className = 'item__remove';
   const li = document.createElement('li');
   li.className = 'cart__item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-  li.addEventListener('click', (event) => cartItemClickListener(event, salePrice));
+  button.addEventListener('click', (event) => cartItemClickListener(event, salePrice));
+  li.appendChild(button);
   return li;
 };
 const itemShop = async ({ target: { parentNode } }) => {
